@@ -3,14 +3,15 @@
 
 import { useState } from 'react';
 import { GeocodeResponseBody } from '@/types/backend';
+import { useLocationContext } from './LocationContext';
 
 
 export default function LocationForm () {
   const [city, setCity] = useState<string>('');
   const [state, setState] = useState<string>('');
   const [country, setCountry] = useState<string>('');
-  const [latitude, setLatitude] = useState<number>(0);
-  const [longitude, setLongitude] = useState<number>(0);
+  
+  const { latitude, longitude, updateLocation } = useLocationContext();
 
   async function getCoords (): Promise<void> {
     await fetch(`/api/coords`, {
@@ -35,8 +36,7 @@ export default function LocationForm () {
         alert(`No data found for ${city}, ${state}, ${country}. Maybe check spelling?`)
         console.error(`No data found for ${city}, ${state}, ${country}`)
       } else {
-        setLatitude(data.result[0].latitude)
-        setLongitude(data.result[0].longitude)
+        updateLocation(data.result[0].latitude, data.result[0].longitude)
         alert(`Coordinates for ${city}, ${state}, ${country} are ${data.result[0].latitude}, ${data.result[0].longitude}`)
         console.log('Set coordinates')
       }
