@@ -18,6 +18,12 @@ export interface GeocodeResponseBody {
 }
 
 
+export interface WeatherResponseBody {
+  result: Weather | null;
+  message: string;
+}
+
+
 export interface WeatherRequestBody {
   latitude: number;
   longitude: number;
