@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { GeocodeResponseBody } from '@/types/backend';
-import { useLocationContext } from './LocationContext';
+import { useLocationContext } from './context/LocationContext';
 
 
 export default function LocationForm () {

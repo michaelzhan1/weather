@@ -1,10 +1,13 @@
-import MainDisplay from "@/components/MainDisplay"
+import WeatherDisplay from "@/components/WeatherDisplay"
+import { LocationContextProvider } from "@/components/context/LocationContext"
 
 
 export default function Home() {
   return(
     <>
-      <MainDisplay />
+      <LocationContextProvider>
+        <WeatherDisplay />
+      </LocationContextProvider>
     </>
   )
 }

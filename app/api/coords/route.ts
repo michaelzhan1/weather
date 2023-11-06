@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
   });
   if (!res.ok) {
-    alert('An error occured while looking up location data')
+    console.log('An error occured while looking up location data')
     return new Response(JSON.stringify({ result: null, message: 'An error occured while looking up location data' }), {
       status: 500,
       headers: {

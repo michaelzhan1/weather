@@ -1,10 +1,10 @@
 'use client'
 
 
-import { useLocationContext } from "./LocationContext"
+import { useLocationContext } from "./context/LocationContext"
 import { useEffect, useState } from "react";
 import { WeatherResponseBody, Weather } from "@/types/backend";
-
+import LocationForm from "./LocationForm";
 
 export default function WeatherDisplay() {
   const [ weatherCondition, setWeatherCondition ] = useState<string>('');
@@ -13,6 +13,10 @@ export default function WeatherDisplay() {
   // when latitude or longitude changes, set the weathercondition to the result of it
   useEffect(() => {
     async function getWeatherCondition(): Promise<void> {
+      if (latitude === null || longitude === null) {
+        console.log('Latitude or longitude is null, not updating weather conditions')
+        return
+      }
       console.log('Updating weather conditions')
       const res: Response = await fetch(`/api/weather?latitude=${latitude}&longitude=${longitude}`)
       if (!res.ok) {
@@ -35,7 +39,8 @@ export default function WeatherDisplay() {
     <>
       {(latitude === null) && (longitude === null) ? (
         <>
-          <div>Null values in lat and lon</div>
+          <div>No location set</div>
+          <LocationForm />
         </>
       ) : (
         <>
