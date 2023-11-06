@@ -6,9 +6,49 @@ import { useEffect, useState } from "react";
 import { WeatherResponseBody, Weather } from "@/types/backend";
 import LocationForm from "./LocationForm";
 
+function weatherStatement(code: number, temp: number): string {
+  temp = Math.round(temp)
+  let tempStatement: string = `It is ${temp}\u00B0F and `
+  if (code == 0) {
+    return ''
+  } else if (200 <= code && code < 300) {
+    tempStatement += 'thunderstorming outside.'
+  } else if (300 <= code && code < 400) {
+    tempStatement += 'drizzling outside.'
+  } else if (500 <= code && code < 600) {
+    tempStatement += 'raining outside.'
+  } else if (600 <= code && code < 700) {
+    tempStatement += 'snowing outside.'
+  } else if (700 <= code && code < 800) {
+    tempStatement += 'foggy outside.'
+  } else if (code == 800) {
+    tempStatement += 'clear outside.'
+  } else if (code <= 802) {
+    tempStatement += 'partly cloudy outside.'
+  } else if (code <= 804) {
+    tempStatement += 'cloudy outside.'
+  } else {
+    return ''
+  }
+  return tempStatement
+}
+
 export default function WeatherDisplay() {
   const [ weatherCondition, setWeatherCondition ] = useState<string>('');
-  const { latitude, longitude } = useLocationContext();
+  const [ weatherCode, setWeatherCode ] = useState<number>(0);
+  const [ temperature, setTemperature ] = useState<number>(0);
+  const { latitude, longitude, city, updateLocation } = useLocationContext();
+
+  // on page load, read latitude and longitude from localStorage, if exists
+  useEffect(() => {
+    const latitude: string | null = localStorage.getItem('latitude');
+    const longitude: string | null = localStorage.getItem('longitude');
+    const city: string | null = localStorage.getItem('city');
+    if (latitude && longitude && city) {
+      console.log('Setting latitude and longitude from localStorage')
+      updateLocation(parseFloat(latitude), parseFloat(longitude), city)
+    }
+  })
 
   // when latitude or longitude changes, set the weathercondition to the result of it
   useEffect(() => {
@@ -29,6 +69,8 @@ export default function WeatherDisplay() {
         } else {
           const weather: Weather = data.result;
           setWeatherCondition(weather.weather[0].description)
+          setWeatherCode(weather.weather[0].id)
+          setTemperature(weather.main.temp)
         }
       }
     }
@@ -46,11 +88,25 @@ export default function WeatherDisplay() {
         <>
           <div>Latitude: {latitude}</div>
           <div>Longitude: {longitude}</div>
+          <div>
+            Current weather condition: {weatherCondition}
+          </div>
+          <div>
+            Weather code: {weatherCode}
+          </div>
+          <div>
+            Weather description: {weatherStatement(weatherCode, temperature)}
+          </div>
+          <div>
+            City: {city}
+          </div>
+          <div>
+            Change location:
+          </div>
+          <LocationForm />
         </>
       )}
-      <div>
-        Current weather condition: {weatherCondition}
-      </div>
+      
     </>
   )
 }

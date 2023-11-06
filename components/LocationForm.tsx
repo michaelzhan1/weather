@@ -13,7 +13,8 @@ export default function LocationForm () {
   
   const { latitude, longitude, updateLocation } = useLocationContext();
 
-  async function getCoords (): Promise<void> {
+  async function getCoords (event: React.FormEvent<HTMLButtonElement>): Promise<void> {
+    event.preventDefault();
     await fetch(`/api/coords`, {
       method: 'POST',
       headers: {
@@ -36,8 +37,10 @@ export default function LocationForm () {
         alert(`No data found for ${city}, ${state}, ${country}. Maybe check spelling?`)
         console.error(`No data found for ${city}, ${state}, ${country}`)
       } else {
-        updateLocation(data.result[0].latitude, data.result[0].longitude)
-        alert(`Coordinates for ${city}, ${state}, ${country} are ${data.result[0].latitude}, ${data.result[0].longitude}`)
+        updateLocation(data.result[0].latitude, data.result[0].longitude, data.result[0].name)
+        localStorage.setItem('latitude', data.result[0].latitude.toString())
+        localStorage.setItem('longitude', data.result[0].longitude.toString())
+        localStorage.setItem('city', data.result[0].name)
         console.log('Set coordinates')
       }
     }
@@ -45,7 +48,6 @@ export default function LocationForm () {
 
   return (
     <>
-      <div>Locations: {city}, {country}</div>
       <form>
         <label htmlFor='city'>City</label>
         <input name="city" type='text' value={city} onChange={e => setCity(e.target.value)} required />
@@ -53,10 +55,8 @@ export default function LocationForm () {
         <input name='state' type='text' value={state} onChange={e => setState(e.target.value)} />
         <label htmlFor='country'>Country</label>
         <input name="country" type='text' value={country} onChange={e => setCountry(e.target.value)} required />
-        <button type='button' onClick={() => console.log(city, country)}>Submit</button>
+        <button type='submit' onClick={getCoords}>Click here for coordinates!</button>
       </form>
-      <button type='button' onClick={getCoords}>Click here for coordinates!</button>
-      <div>Coordinates: {latitude}, {longitude}</div>
     </>
   )
 }

@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     'lat': latitude.toString(),
     'lon': longitude.toString(),
     'appid': process.env.APIWEATHER_KEY as string,
+    'units': 'imperial',
   });
 
   const res: Response = await fetch('https://api.openweathermap.org/data/2.5/weather?' + searchParams);
