@@ -26,7 +26,7 @@ function weatherStatement(code: number, temp: number): string {
   } else if (code <= 802) {
     tempStatement += 'partly cloudy outside.'
   } else if (code <= 804) {
-    tempStatement += 'cloudy outside.'
+    tempStatement += 'overcast outside.'
   } else {
     return ''
   }
@@ -34,7 +34,6 @@ function weatherStatement(code: number, temp: number): string {
 }
 
 export default function WeatherDisplay() {
-  const [ weatherCondition, setWeatherCondition ] = useState<string>('');
   const [ weatherCode, setWeatherCode ] = useState<number>(0);
   const [ temperature, setTemperature ] = useState<number>(0);
   const { latitude, longitude, city, updateLocation } = useLocationContext();
@@ -68,7 +67,6 @@ export default function WeatherDisplay() {
           console.error(`No data found for ${latitude}, ${longitude}`)
         } else {
           const weather: Weather = data.result;
-          setWeatherCondition(weather.weather[0].description)
           setWeatherCode(weather.weather[0].id)
           setTemperature(weather.main.temp)
         }
@@ -86,24 +84,21 @@ export default function WeatherDisplay() {
         </>
       ) : (
         <>
-          <div>Latitude: {latitude}</div>
-          <div>Longitude: {longitude}</div>
-          <div>
-            Current weather condition: {weatherCondition}
+          <div className="h-screen bg-cloudy flex flex-col items-center justify-center">
+            <div className="font-bold text-8xl w-3/5 text-center">
+              {weatherStatement(weatherCode, temperature)}
+            </div>
           </div>
-          <div>
-            Weather code: {weatherCode}
-          </div>
-          <div>
-            Weather description: {weatherStatement(weatherCode, temperature)}
-          </div>
-          <div>
-            City: {city}
-          </div>
-          <div>
-            Change location:
-          </div>
-          <LocationForm />
+          
+          <footer className="fixed bottom-0">
+            <div>
+              Current location: {city}
+            </div>
+            <div>
+              Change location:
+            </div>
+            <LocationForm />
+          </footer>
         </>
       )}
       
