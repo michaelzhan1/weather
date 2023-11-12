@@ -48,14 +48,14 @@ export default function LocationForm () {
 
   return (
     <>
-      <form>
+      <form className='flex flex-col mb-5 justify-center items-center text-center'>
         <label htmlFor='city'>City</label>
         <input name="city" type='text' value={city} onChange={e => setCity(e.target.value)} required />
         <label htmlFor='state'>State</label>
         <input name='state' type='text' value={state} onChange={e => setState(e.target.value)} />
         <label htmlFor='country'>Country</label>
         <input name="country" type='text' value={country} onChange={e => setCountry(e.target.value)} required />
-        <button type='submit' onClick={getCoords}>Click here for coordinates!</button>
+        <button type='submit' onClick={getCoords}>Change</button>
       </form>
     </>
   )
