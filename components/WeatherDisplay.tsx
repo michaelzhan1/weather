@@ -121,8 +121,8 @@ export default function WeatherDisplay() {
             </div>
           </div>
 
-          <div className="absolute bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm">
-            <div className="flex flex-col items-center justify-center bg-gray-800 text-white">
+          <div className="hidden absolute bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm">
+            <div className="flex flex-col items-center justify-center bg-gray-600 text-white">
               <div className="text-lg">Change location:</div>
               <LocationForm />
             </div>
