@@ -36,6 +36,8 @@ export default function WeatherDisplay() {
   const [weatherCode, setWeatherCode] = useState<number>(0);
   const [temperature, setTemperature] = useState<number>(0);
   const { latitude, longitude, city, updateLocation } = useLocationContext();
+  const [ editLocationBGOpen, setEditLocationBGOpen ] = useState<boolean>(false);
+  const [ editLocationOpen, setEditLocationOpen ] = useState<boolean>(false);
 
   // on page load, read latitude and longitude from localStorage, if exists
   useEffect(() => {
@@ -72,11 +74,31 @@ export default function WeatherDisplay() {
           const weather: Weather = data.result;
           setWeatherCode(weather.weather[0].id);
           setTemperature(weather.main.temp);
+          setEditLocationOpen(false);
+          setTimeout(() => {
+            setEditLocationBGOpen(false);
+          }, 100)
         }
       }
     }
     getWeatherCondition();
   }, [latitude, longitude]);
+
+  const openLocationButton = () => {
+    setEditLocationBGOpen(true);
+    setTimeout(() => {
+      setEditLocationOpen(true);
+    }, 1)
+  }
+
+  const closeLocationButton = (event: React.MouseEvent) => {
+    if (!!!(event.target as HTMLButtonElement).closest('#editLocation')) {
+      setEditLocationOpen(false);
+      setTimeout(() => {
+        setEditLocationBGOpen(false);
+      }, 100)
+    }
+  }
 
   let bgColor: string;
   let textColor: string;
@@ -121,16 +143,18 @@ export default function WeatherDisplay() {
             </div>
           </div>
 
-          <div className="hidden absolute bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm">
-            <div className="flex flex-col items-center justify-center bg-gray-600 text-white">
-              <div className="text-lg">Change location:</div>
-              <LocationForm />
+          {editLocationBGOpen && (
+            <div className={`fixed bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm`} onClick={ closeLocationButton }>
+              <div id='editLocation' className={`${editLocationOpen ? 'translate-y-0' : 'translate-y-full'} transition-transform absolute bottom-0 w-full flex flex-col items-center justify-center bg-gray-600 text-white`}>
+                <div className="text-lg">Change location:</div>
+                <LocationForm />
+              </div>
             </div>
-          </div>
+          )}
 
           <footer className={`${textColor} fixed bottom-0 mb-12 flex w-full flex-col items-center justify-center`}>
             <div className="text-lg">Current: {city}</div>
-            <button type="button" className="text-sm underline">
+            <button type="button" className="text-sm underline" onClick={ openLocationButton }>
               Edit location
             </button>
           </footer>
