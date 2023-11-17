@@ -5,9 +5,11 @@ import { useLoadingContext } from "./context/LoadingContext";
 import { useEffect, useState } from "react";
 import { WeatherResponseBody, Weather } from "@/types/backend";
 import LocationForm from "./LocationForm";
+import NewLocation from "./NewLocation";
 
 function weatherStatement(code: number, temp: number): string {
   temp = Math.round(temp);
+  console.log('Weather code', code)
   let tempStatement: string = `It is ${temp}\u00B0F and `;
   if (code == 0) {
     return "";
@@ -53,8 +55,9 @@ export default function WeatherDisplay() {
     if (latitude && longitude && city) {
       console.log("Setting latitude and longitude from localStorage");
       updateLocation(parseFloat(latitude), parseFloat(longitude), city);
+    } else {
+      updateLoading(false);
     }
-    updateLoading(false);
   }, []);
 
   // when latitude or longitude changes, set the weathercondition to the result of it
@@ -85,30 +88,32 @@ export default function WeatherDisplay() {
           let newTextColor: string;
           setTemperature(weather.main.temp);
           setWeatherCode(weather.weather[0].id);
+          let code = weather.weather[0].id;
+          console.log('Weather code: ', weatherCode)
 
           if (weather.dt < weather.sys.sunrise || weather.dt > weather.sys.sunset) {
             newBgColor = "bg-night";
             newTextColor = "text-white";
           } else {
-            if (200 <= weatherCode && weatherCode < 300) {
+            if (200 <= code && code < 300) {
               newBgColor = "bg-storm";
               newTextColor = "text-white";
-            } else if (300 <= weatherCode && weatherCode < 400) {
+            } else if (300 <= code && code < 400) {
               newBgColor = "bg-rainy";
               newTextColor = "text-white";
-            } else if (500 <= weatherCode && weatherCode < 600) {
+            } else if (500 <= code && code < 600) {
               newBgColor = "bg-rainy";
               newTextColor = "text-white";
-            } else if (600 <= weatherCode && weatherCode < 700) {
+            } else if (600 <= code && code < 700) {
               newBgColor = "bg-snow";
               newTextColor = "text-black";
-            } else if (700 <= weatherCode && weatherCode < 800) {
+            } else if (700 <= code && code < 800) {
               newBgColor = "bg-foggy";
               newTextColor = "text-white";
-            } else if (weatherCode <= 802) {
+            } else if (code <= 802) {
               newBgColor = "bg-sunny";
               newTextColor = "text-black";
-            } else if (weatherCode <= 804) {
+            } else if (802 < code && code <= 804) {
               newBgColor = "bg-cloudy";
               newTextColor = "text-white";
             } else {
@@ -125,6 +130,7 @@ export default function WeatherDisplay() {
           console.log('Set weather conditions');
         }
       }
+      console.log('loading off')
       updateLoading(false);
     }
     getWeatherCondition();
@@ -157,8 +163,7 @@ export default function WeatherDisplay() {
           <>
             {latitude === null && longitude === null ? (
               <>
-                <div>No location set</div>
-                <LocationForm />
+                <NewLocation />
               </>
             ) : (
               <>
