@@ -48,14 +48,22 @@ export default function LocationForm () {
 
   return (
     <>
-      <form className='flex flex-col mb-5 justify-center items-center text-center'>
-        <label htmlFor='city'>City</label>
-        <input name="city" type='text' className='text-black' value={city} onChange={e => setCity(e.target.value)} required />
-        <label htmlFor='state'>State</label>
-        <input name='state' type='text' className='text-black' value={state} onChange={e => setState(e.target.value)} />
-        <label htmlFor='country'>Country</label>
-        <input name="country" type='text' className='text-black' value={country} onChange={e => setCountry(e.target.value)} required />
-        <button type='submit' onClick={getCoords}>Change</button>
+      <form className='flex flex-col mb-4 justify-center items-center text-center'>
+        <div className="flex-row flex mb-5">
+          <div className="flex-col flex mx-5">
+            <label htmlFor='city' className='mb-1'>City</label>
+            <input name="city" type='text' className='text-black mb-2 w-40 px-2 py-1' value={city} onChange={e => setCity(e.target.value)} required />
+          </div>
+          <div className="flex flex-col mx-5">
+            <label htmlFor='state' className='mb-1'>State</label>
+            <input name='state' type='text' className='text-black mb-2 w-40 px-2 py-1' placeholder='Optional' value={state} onChange={e => setState(e.target.value)} />
+          </div>
+          <div className="flex flex-col mx-5">
+            <label htmlFor='country' className='mb-1'>Country</label>
+            <input name="country" type='text' placeholder='e.g. US, UK' className='text-black mb-2 w-40 px-2 py-1' value={country} onChange={e => setCountry(e.target.value)} required />
+          </div>
+        </div>
+        <button type='submit' className='mb-10 bg-gray-700 px-5 py-3 shadow-md hover:-translate-y-1' onClick={getCoords}>Change</button>
       </form>
     </>
   )

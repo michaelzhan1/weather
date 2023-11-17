@@ -20,6 +20,7 @@ const config: Config = {
         'snow': '#E6E6E6',
         'foggy': '#727272',
         'sunny': '#FFD67A',
+        'night': '#353535',
       },
     },
   },

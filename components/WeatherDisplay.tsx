@@ -38,6 +38,7 @@ export default function WeatherDisplay() {
   const { latitude, longitude, city, updateLocation } = useLocationContext();
   const [ editLocationBGOpen, setEditLocationBGOpen ] = useState<boolean>(false);
   const [ editLocationOpen, setEditLocationOpen ] = useState<boolean>(false);
+  const [ isNight, setIsNight ] = useState<boolean>(false);
 
   // on page load, read latitude and longitude from localStorage, if exists
   useEffect(() => {
@@ -74,6 +75,11 @@ export default function WeatherDisplay() {
           const weather: Weather = data.result;
           setWeatherCode(weather.weather[0].id);
           setTemperature(weather.main.temp);
+          if (weather.dt < weather.sys.sunrise || weather.dt > weather.sys.sunset) {
+            setIsNight(true);
+          } else {
+            setIsNight(false);
+          }
           setEditLocationOpen(false);
           setTimeout(() => {
             setEditLocationBGOpen(false);
@@ -102,7 +108,10 @@ export default function WeatherDisplay() {
 
   let bgColor: string;
   let textColor: string;
-  if (200 <= weatherCode && weatherCode < 300) {
+  if (isNight) {
+    bgColor = "bg-night";
+    textColor = "text-white";
+  } else if (200 <= weatherCode && weatherCode < 300) {
     bgColor = "bg-storm";
     textColor = "text-white";
   } else if (300 <= weatherCode && weatherCode < 400) {
@@ -146,7 +155,7 @@ export default function WeatherDisplay() {
           {editLocationBGOpen && (
             <div className={`fixed bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm`} onClick={ closeLocationButton }>
               <div id='editLocation' className={`${editLocationOpen ? 'translate-y-0' : 'translate-y-full'} transition-transform absolute bottom-0 w-full flex flex-col items-center justify-center bg-gray-600 text-white`}>
-                <div className="text-lg">Change location:</div>
+                <div className="text-lg mt-10 mb-3">Change your location:</div>
                 <LocationForm />
               </div>
             </div>
