@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { GeocodeResponseBody } from '@/types/backend';
 import { useLocationContext } from './context/LocationContext';
+import { useLoadingContext } from './context/LoadingContext';
 
 
 export default function LocationForm () {
@@ -12,8 +13,10 @@ export default function LocationForm () {
   const [country, setCountry] = useState<string>('');
   
   const { latitude, longitude, updateLocation } = useLocationContext();
+  const { updateLoading } = useLoadingContext();
 
   async function getCoords (event: React.FormEvent<HTMLButtonElement>): Promise<void> {
+    updateLoading(true);
     event.preventDefault();
     await fetch(`/api/coords`, {
       method: 'POST',
@@ -44,6 +47,7 @@ export default function LocationForm () {
         console.log('Set coordinates')
       }
     }
+    updateLoading(false);
   }
 
   return (

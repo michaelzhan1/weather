@@ -1,3 +1,5 @@
+'use client'
+
 import WeatherDisplay from "@/components/WeatherDisplay"
 import { LocationContextProvider } from "@/components/context/LocationContext"
 import { LoadingContextProvider } from "@/components/context/LoadingContext"

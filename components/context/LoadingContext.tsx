@@ -15,7 +15,13 @@ export function LoadingContextProvider({children}: {children: ReactNode}) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const updateLoading = (isLoading: boolean) => {
-    setIsLoading(isLoading)
+    if (isLoading) {
+      setIsLoading(isLoading)
+    } else {
+      setTimeout(() => {
+        setIsLoading(isLoading)
+      }, 100)
+    }
   }
 
   const contextData = {

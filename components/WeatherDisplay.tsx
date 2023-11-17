@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocationContext } from "./context/LocationContext";
+import { useLoadingContext } from "./context/LoadingContext";
 import { useEffect, useState } from "react";
 import { WeatherResponseBody, Weather } from "@/types/backend";
 import LocationForm from "./LocationForm";
@@ -35,14 +36,16 @@ function weatherStatement(code: number, temp: number): string {
 export default function WeatherDisplay() {
   const [weatherCode, setWeatherCode] = useState<number>(0);
   const [temperature, setTemperature] = useState<number>(0);
-  const { latitude, longitude, city, updateLocation } = useLocationContext();
   const [ editLocationBGOpen, setEditLocationBGOpen ] = useState<boolean>(false);
   const [ editLocationOpen, setEditLocationOpen ] = useState<boolean>(false);
   const [ isNight, setIsNight ] = useState<boolean>(false);
-
+  
+  const { latitude, longitude, city, updateLocation } = useLocationContext();
+  const { isLoading, updateLoading } = useLoadingContext();
 
   // on page load, read latitude and longitude from localStorage, if exists
   useEffect(() => {
+    updateLoading(true);
     const latitude: string | null = localStorage.getItem("latitude");
     const longitude: string | null = localStorage.getItem("longitude");
     const city: string | null = localStorage.getItem("city");
@@ -50,7 +53,8 @@ export default function WeatherDisplay() {
       console.log("Setting latitude and longitude from localStorage");
       updateLocation(parseFloat(latitude), parseFloat(longitude), city);
     }
-  });
+    updateLoading(false);
+  }, []);
 
   // when latitude or longitude changes, set the weathercondition to the result of it
   useEffect(() => {
@@ -88,14 +92,16 @@ export default function WeatherDisplay() {
         }
       }
     }
+    updateLoading(true);
     getWeatherCondition();
+    updateLoading(false);
   }, [latitude, longitude]);
 
   const openLocationButton = () => {
     setEditLocationBGOpen(true);
     setTimeout(() => {
       setEditLocationOpen(true);
-    }, 1)
+    }, 10)
   }
 
   const closeLocationButton = (event: React.MouseEvent) => {
@@ -140,6 +146,13 @@ export default function WeatherDisplay() {
 
   return (
     <>
+      {
+        isLoading && (
+          <div className="fixed top-0 left-0 z-50 h-screen w-screen flex items-center justify-center bg-white">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+          </div>
+        )
+      }
       {latitude === null && longitude === null ? (
         <>
           <div>No location set</div>
