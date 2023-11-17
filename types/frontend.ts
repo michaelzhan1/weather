@@ -4,3 +4,9 @@ export interface LocationContextProps {
   city: string | null;
   updateLocation: (latitude: number, longitude: number, city?: string) => void;
 }
+
+
+export interface LoadingContextProps {
+  isLoading: boolean;
+  updateLoading: (isLoading: boolean) => void;
+}

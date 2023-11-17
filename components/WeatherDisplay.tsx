@@ -40,6 +40,7 @@ export default function WeatherDisplay() {
   const [ editLocationOpen, setEditLocationOpen ] = useState<boolean>(false);
   const [ isNight, setIsNight ] = useState<boolean>(false);
 
+
   // on page load, read latitude and longitude from localStorage, if exists
   useEffect(() => {
     const latitude: string | null = localStorage.getItem("latitude");
