@@ -38,7 +38,8 @@ export default function WeatherDisplay() {
   const [temperature, setTemperature] = useState<number>(0);
   const [ editLocationBGOpen, setEditLocationBGOpen ] = useState<boolean>(false);
   const [ editLocationOpen, setEditLocationOpen ] = useState<boolean>(false);
-  const [ isNight, setIsNight ] = useState<boolean>(false);
+  const [ bgColor, setBgColor ] = useState<string>('bg-gray-400');
+  const [ textColor, setTextColor ] = useState<string>('text-black');
   
   const { latitude, longitude, city, updateLocation } = useLocationContext();
   const { isLoading, updateLoading } = useLoadingContext();
@@ -59,10 +60,12 @@ export default function WeatherDisplay() {
   // when latitude or longitude changes, set the weathercondition to the result of it
   useEffect(() => {
     async function getWeatherCondition(): Promise<void> {
+      updateLoading(true);
       if (latitude === null || longitude === null) {
         console.log(
           "Latitude or longitude is null, not updating weather conditions",
         );
+        updateLoading(false);
         return;
       }
       console.log("Updating weather conditions");
@@ -78,23 +81,53 @@ export default function WeatherDisplay() {
           console.error(`No data found for ${latitude}, ${longitude}`);
         } else {
           const weather: Weather = data.result;
-          setWeatherCode(weather.weather[0].id);
+          let newBgColor: string;
+          let newTextColor: string;
           setTemperature(weather.main.temp);
+          setWeatherCode(weather.weather[0].id);
+
           if (weather.dt < weather.sys.sunrise || weather.dt > weather.sys.sunset) {
-            setIsNight(true);
+            newBgColor = "bg-night";
+            newTextColor = "text-white";
           } else {
-            setIsNight(false);
+            if (200 <= weatherCode && weatherCode < 300) {
+              newBgColor = "bg-storm";
+              newTextColor = "text-white";
+            } else if (300 <= weatherCode && weatherCode < 400) {
+              newBgColor = "bg-rainy";
+              newTextColor = "text-white";
+            } else if (500 <= weatherCode && weatherCode < 600) {
+              newBgColor = "bg-rainy";
+              newTextColor = "text-white";
+            } else if (600 <= weatherCode && weatherCode < 700) {
+              newBgColor = "bg-snow";
+              newTextColor = "text-black";
+            } else if (700 <= weatherCode && weatherCode < 800) {
+              newBgColor = "bg-foggy";
+              newTextColor = "text-white";
+            } else if (weatherCode <= 802) {
+              newBgColor = "bg-sunny";
+              newTextColor = "text-black";
+            } else if (weatherCode <= 804) {
+              newBgColor = "bg-cloudy";
+              newTextColor = "text-white";
+            } else {
+              newBgColor = "bg-gray-400";
+              newTextColor = "text-black";
+            }
           }
+          setBgColor(newBgColor);
+          setTextColor(newTextColor);
           setEditLocationOpen(false);
           setTimeout(() => {
             setEditLocationBGOpen(false);
           }, 100)
+          console.log('Set weather conditions');
         }
       }
+      updateLoading(false);
     }
-    updateLoading(true);
     getWeatherCondition();
-    updateLoading(false);
   }, [latitude, longitude]);
 
   const openLocationButton = () => {
@@ -113,76 +146,48 @@ export default function WeatherDisplay() {
     }
   }
 
-  let bgColor: string;
-  let textColor: string;
-  if (isNight) {
-    bgColor = "bg-night";
-    textColor = "text-white";
-  } else if (200 <= weatherCode && weatherCode < 300) {
-    bgColor = "bg-storm";
-    textColor = "text-white";
-  } else if (300 <= weatherCode && weatherCode < 400) {
-    bgColor = "bg-rainy";
-    textColor = "text-white";
-  } else if (500 <= weatherCode && weatherCode < 600) {
-    bgColor = "bg-rainy";
-    textColor = "text-white";
-  } else if (600 <= weatherCode && weatherCode < 700) {
-    bgColor = "bg-snow";
-    textColor = "text-black";
-  } else if (700 <= weatherCode && weatherCode < 800) {
-    bgColor = "bg-foggy";
-    textColor = "text-white";
-  } else if (weatherCode <= 802) {
-    bgColor = "bg-sunny";
-    textColor = "text-black";
-  } else if (weatherCode <= 804) {
-    bgColor = "bg-cloudy";
-    textColor = "text-white";
-  } else {
-    bgColor = "bg-gray-400";
-    textColor = "text-black";
-  }
-
   return (
     <>
       {
-        isLoading && (
-          <div className="fixed top-0 left-0 z-50 h-screen w-screen flex items-center justify-center bg-white">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        isLoading ? (
+          <div className="fixed top-0 left-0 z-50 h-screen w-screen flex items-center justify-center bg-gray-400">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-200"></div>
           </div>
+        ) : (
+          <>
+            {latitude === null && longitude === null ? (
+              <>
+                <div>No location set</div>
+                <LocationForm />
+              </>
+            ) : (
+              <>
+                <div className={`h-screen ${bgColor} ${textColor} flex flex-col items-center justify-center`}>
+                  <div className="w-3/5 text-center text-8xl font-bold">
+                    {weatherStatement(weatherCode, temperature)}
+                  </div>
+                </div>
+
+                {editLocationBGOpen && (
+                  <div className={`fixed bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm`} onClick={ closeLocationButton }>
+                    <div id='editLocation' className={`${editLocationOpen ? 'translate-y-0' : 'translate-y-full'} transition-transform absolute bottom-0 w-full flex flex-col items-center justify-center bg-gray-600 text-white`}>
+                      <div className="text-lg mt-10 mb-3">Change your location:</div>
+                      <LocationForm />
+                    </div>
+                  </div>
+                )}
+
+                <footer className={`${textColor} fixed bottom-0 mb-12 flex w-full flex-col items-center justify-center`}>
+                  <div className="text-lg">Current: {city}</div>
+                  <button type="button" className="text-sm underline" onClick={ openLocationButton }>
+                    Edit location
+                  </button>
+                </footer>
+              </>
+            )}
+          </>
         )
       }
-      {latitude === null && longitude === null ? (
-        <>
-          <div>No location set</div>
-          <LocationForm />
-        </>
-      ) : (
-        <>
-          <div className={`h-screen ${bgColor} ${textColor} flex flex-col items-center justify-center`}>
-            <div className="w-3/5 text-center text-8xl font-bold">
-              {weatherStatement(weatherCode, temperature)}
-            </div>
-          </div>
-
-          {editLocationBGOpen && (
-            <div className={`fixed bottom-0 z-10 h-full w-full bg-black bg-opacity-50 backdrop-blur-sm`} onClick={ closeLocationButton }>
-              <div id='editLocation' className={`${editLocationOpen ? 'translate-y-0' : 'translate-y-full'} transition-transform absolute bottom-0 w-full flex flex-col items-center justify-center bg-gray-600 text-white`}>
-                <div className="text-lg mt-10 mb-3">Change your location:</div>
-                <LocationForm />
-              </div>
-            </div>
-          )}
-
-          <footer className={`${textColor} fixed bottom-0 mb-12 flex w-full flex-col items-center justify-center`}>
-            <div className="text-lg">Current: {city}</div>
-            <button type="button" className="text-sm underline" onClick={ openLocationButton }>
-              Edit location
-            </button>
-          </footer>
-        </>
-      )}
     </>
   );
 }
