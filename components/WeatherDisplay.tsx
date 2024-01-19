@@ -57,6 +57,7 @@ export default function WeatherDisplay() {
       updateLocation(parseFloat(latitude), parseFloat(longitude), city);
     } else {
       updateLoading(false);
+      document.title = "Choose a location"
     }
   }, []);
 

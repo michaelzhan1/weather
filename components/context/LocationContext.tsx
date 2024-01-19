@@ -22,6 +22,7 @@ export function LocationContextProvider({children}: {children: ReactNode}) {
     setLongitude(longitude)
     if (city !== undefined){
       setCity(city)
+      document.title = `${city} Weather`
     }
   }
 
